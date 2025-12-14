@@ -18,7 +18,7 @@ A full-stack web application for managing a sweet shop inventory with real-time 
 - Purchase history tracking
 - Contact page with business information
 
-### 👨‍💼 Admin Features
+### 👨💼 Admin Features
 - Add, update, and delete sweets
 - Restock inventory
 - Admin-only protected routes
@@ -239,3 +239,5 @@ Built as a part of Incubyte family.
 - Database modeling with Prisma
 - Authentication & authorization
 - Performance optimization
+
+
