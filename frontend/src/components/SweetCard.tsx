@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import type { Sweet } from '../types';
-import { sweetsAPI } from '../services/api';
 import confetti from 'canvas-confetti';
 import toast from 'react-hot-toast';
-import { trackPurchase } from './PurchaseHistory';
 import { Recommendations } from './Recommendations';
+import { useCart } from '../context/CartContext';
 
 interface SweetCardProps {
   sweet: Sweet;
@@ -15,7 +14,7 @@ interface SweetCardProps {
   allSweets?: Sweet[];
 }
 
-export const SweetCard: React.FC<SweetCardProps> = ({ 
+export const SweetCard: React.FC<SweetCardProps> = React.memo(({ 
   sweet, 
   onUpdate, 
   canPurchase,
@@ -23,71 +22,55 @@ export const SweetCard: React.FC<SweetCardProps> = ({
   exchangeRate = 84.5,
   allSweets = []
 }) => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [quantity, setQuantity] = useState(sweet.quantity);
-  const [purchaseCount] = useState(Math.floor(Math.random() * 50) + 1);
-  const [calories] = useState(Math.floor(Math.random() * 300) + 150);
-  const [rating] = useState((Math.random() * 2 + 3).toFixed(1));
+  const { addToCart } = useCart();
+  const quantity = sweet.quantity;
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [viewing] = useState(Math.floor(Math.random() * 8) + 1);
 
   useEffect(() => {
-    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    const userId = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!).id : 'guest';
+    const key = `wishlist_${userId}`;
+    const wishlist = JSON.parse(localStorage.getItem(key) || '[]');
     setIsWishlisted(wishlist.includes(sweet.id));
   }, [sweet.id]);
 
   const toggleWishlist = () => {
-    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    const userId = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!).id : 'guest';
+    const key = `wishlist_${userId}`;
+    const wishlist = JSON.parse(localStorage.getItem(key) || '[]');
     if (isWishlisted) {
       const updated = wishlist.filter((id: string) => id !== sweet.id);
-      localStorage.setItem('wishlist', JSON.stringify(updated));
+      localStorage.setItem(key, JSON.stringify(updated));
       toast.success('Removed from wishlist');
     } else {
       wishlist.push(sweet.id);
-      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      localStorage.setItem(key, JSON.stringify(wishlist));
       toast.success('Added to wishlist!');
     }
     setIsWishlisted(!isWishlisted);
   };
 
-  const handlePurchase = async () => {
-    if (quantity === 0) return;
-
-    setLoading(true);
-    setError('');
-
+  const handleAddToCart = async () => {
+    if (sweet.quantity === 0) {
+      toast.error('Out of stock!');
+      return;
+    }
     try {
-      await sweetsAPI.purchase(sweet.id);
-      setQuantity(quantity - 1);
-      
-      // Track purchase
-      trackPurchase(sweet.name);
-      
-      // Confetti animation
+      await addToCart(sweet);
       confetti({
-        particleCount: 100,
-        spread: 70,
+        particleCount: 50,
+        spread: 60,
         origin: { y: 0.6 }
       });
-      
-      // Toast notification
-      toast.success(`${sweet.name} added! Your diet can wait 😋`, {
-        duration: 3000,
-        icon: '🎉',
-      });
+      toast.success(`${sweet.name} added to cart! 🛒`);
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Oops! Something went wrong');
-      setError(err.response?.data?.message || 'Failed to purchase sweet');
-    } finally {
-      setLoading(false);
+      toast.error(err.message || 'Failed to add to cart');
     }
   };
 
   return (
     <div 
       id={`sweet-${sweet.id}`}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:scale-105 transition-all duration-300 flex flex-col border-2 border-orange-100 dark:border-purple-700 hover:border-orange-300 dark:hover:border-pink-500 animate-slide-up"
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:scale-105 transition-all duration-300 flex flex-col border border-gray-200 dark:border-gray-700 hover:border-teal-300 dark:hover:border-teal-600 animate-slide-up"
     >
       <div className="relative overflow-hidden group">
         <button
@@ -108,15 +91,14 @@ export const SweetCard: React.FC<SweetCardProps> = ({
       </div>
       <div className="p-6 flex flex-col flex-1">
         <div className="mb-2 flex gap-2 flex-wrap">
-          <span className="text-xs bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-300 px-2 py-1 rounded-full font-semibold">
-            🔥 {purchaseCount} bought today
-          </span>
-          <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 px-2 py-1 rounded-full font-semibold">
-            👀 {viewing} viewing now
-          </span>
-          {quantity < 10 && (
+          {quantity < 10 && quantity > 0 && (
             <span className="text-xs bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 px-2 py-1 rounded-full font-semibold animate-pulse">
               ⚠️ Low Stock!
+            </span>
+          )}
+          {quantity === 0 && (
+            <span className="text-xs bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full font-semibold">
+              🚫 Out of Stock
             </span>
           )}
         </div>
@@ -124,57 +106,43 @@ export const SweetCard: React.FC<SweetCardProps> = ({
           <div className="flex justify-between items-start mb-2">
             <h3 className="text-xl font-bold text-gray-800 dark:text-white group-hover:text-orange-600 dark:group-hover:text-yellow-400 transition-colors flex-1">{sweet.name}</h3>
             <div className="text-right ml-4">
-              <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold text-teal-600 dark:text-teal-400">
                 ${sweet.price.toFixed(2)}
               </span>
               <p className="text-sm font-semibold text-orange-500">₹{(sweet.price * exchangeRate).toFixed(2)}</p>
             </div>
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">{sweet.category}</p>
-          <div className="flex items-center gap-1 mt-1">
-            {[...Array(5)].map((_, i) => (
-              <span key={i} className={`text-sm ${i < Math.floor(Number(rating)) ? 'text-yellow-400' : 'text-gray-300'}`}>★</span>
-            ))}
-            <span className="text-xs text-gray-600 dark:text-gray-400 ml-1">({rating})</span>
-          </div>
+
         </div>
 
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-xs text-orange-600 font-semibold">🔥 Only {calories} calories of pure joy!</span>
-          </div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-600">Stock:</span>
-            <span className={`text-sm font-medium ${
+            <span className="text-sm text-gray-600 dark:text-gray-400">Stock:</span>
+            <span className={`text-sm font-bold transition-colors duration-300 ${
               quantity > 10 
-                ? 'text-green-600' 
+                ? 'text-green-600 dark:text-green-400' 
                 : quantity > 0 
-                ? 'text-yellow-600' 
-                : 'text-red-600'
+                ? 'text-yellow-600 dark:text-yellow-400' 
+                : 'text-red-600 dark:text-red-400'
             }`}>
               {quantity} {quantity === 1 ? 'item' : 'items'}
             </span>
           </div>
         </div>
 
-        {error && (
-          <div className="mb-3 p-2 bg-red-100 border border-red-400 text-red-700 text-xs rounded">
-            {error}
-          </div>
-        )}
-
         <div className="mt-auto">
           {canPurchase && (
             <button
-              onClick={handlePurchase}
-              disabled={quantity === 0 || loading}
+              onClick={handleAddToCart}
+              disabled={quantity === 0}
               className={`w-full py-3 px-4 rounded-lg font-bold transition-all duration-300 transform text-sm ${
                 quantity === 0
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 hover:shadow-lg active:scale-95'
+                  : 'bg-teal-600 text-white hover:bg-teal-700 hover:shadow-lg active:scale-95'
               }`}
             >
-              {loading ? 'Processing...' : quantity === 0 ? 'Sold Out!' : 'Add to Cart'}
+              {quantity === 0 ? 'Sold Out!' : 'Add to Cart'}
             </button>
           )}
         </div>
@@ -185,5 +153,5 @@ export const SweetCard: React.FC<SweetCardProps> = ({
       </div>
     </div>
   );
-};
+});
 

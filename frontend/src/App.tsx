@@ -8,8 +8,11 @@ import { Dashboard } from './components/Dashboard';
 import { AdminPanel } from './components/AdminPanel';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Wishlist } from './components/Wishlist';
+import { Contact } from './components/Contact';
+import { Cart } from './components/Cart';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './context/ThemeContext';
+import { CartProvider } from './context/CartContext';
 
 const AppRoutes: React.FC = () => {
   const { user } = useAuth();
@@ -35,6 +38,22 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
+        path="/contact"
+        element={
+          <ProtectedRoute>
+            <Contact />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/cart"
+        element={
+          <ProtectedRoute>
+            <Cart />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/admin"
         element={
           <ProtectedRoute adminOnly>
@@ -51,13 +70,15 @@ const App: React.FC = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <Router>
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-            <Toaster position="top-right" />
-            <Navbar />
-            <AppRoutes />
-          </div>
-        </Router>
+        <CartProvider>
+          <Router>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+              <Toaster position="top-right" />
+              <Navbar />
+              <AppRoutes />
+            </div>
+          </Router>
+        </CartProvider>
       </AuthProvider>
     </ThemeProvider>
   );

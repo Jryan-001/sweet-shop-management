@@ -15,7 +15,9 @@ export const Wishlist: React.FC = () => {
 
   const loadWishlist = async () => {
     try {
-      const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+      const userId = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!).id : 'guest';
+      const key = `wishlist_${userId}`;
+      const wishlist = JSON.parse(localStorage.getItem(key) || '[]');
       const allSweets = await sweetsAPI.getAll();
       const filtered = allSweets.filter(sweet => wishlist.includes(sweet.id));
       setWishlistSweets(filtered);

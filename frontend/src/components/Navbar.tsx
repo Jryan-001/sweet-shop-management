@@ -2,10 +2,12 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useCart } from '../context/CartContext';
 
 export const Navbar: React.FC = () => {
   const { user, logout, isAdmin } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+  const { totalItems } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -16,8 +18,8 @@ export const Navbar: React.FC = () => {
   return (
     <nav className={`shadow-xl sticky top-0 z-50 transition-all duration-300 ${
       isDark 
-        ? 'bg-gradient-to-r from-purple-900 via-pink-900 to-red-900' 
-        : 'bg-gradient-to-r from-red-500 via-red-600 to-red-500'
+        ? 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900' 
+        : 'bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-600'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
@@ -48,6 +50,23 @@ export const Navbar: React.FC = () => {
                   className="text-white hover:bg-white/20 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 hover:scale-105"
                 >
                   Wishlist
+                </Link>
+                <Link
+                  to="/contact"
+                  className="text-white hover:bg-white/20 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 hover:scale-105"
+                >
+                  Contact
+                </Link>
+                <Link
+                  to="/cart"
+                  className="text-white hover:bg-white/20 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 hover:scale-105 relative"
+                >
+                  Cart
+                  {totalItems > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {totalItems}
+                    </span>
+                  )}
                 </Link>
                 {isAdmin && (
                   <Link

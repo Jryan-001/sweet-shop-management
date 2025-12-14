@@ -10,6 +10,7 @@ import { PurchaseHistory } from './PurchaseHistory';
 import { MithaiMeter } from './MithaiMeter';
 import { FestivalCountdown } from './FestivalCountdown';
 
+
 import { PerformanceMetrics } from './PerformanceMetrics';
 
 export const Dashboard: React.FC = () => {
@@ -26,6 +27,8 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     loadSweets();
     fetchExchangeRate();
+    const interval = setInterval(() => loadSweets(true), 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchExchangeRate = async () => {
@@ -42,16 +45,18 @@ export const Dashboard: React.FC = () => {
     filterSweets();
   }, [sweets, searchTerm, selectedCategory, priceRange]);
 
-  const loadSweets = async () => {
+  const loadSweets = async (silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       const data = await sweetsAPI.getAll();
-      setSweets(data);
-      setFilteredSweets(data);
+      setSweets(prev => {
+        const hasChanges = JSON.stringify(prev) !== JSON.stringify(data);
+        return hasChanges ? data : prev;
+      });
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to load sweets');
+      if (!silent) setError(err.response?.data?.message || 'Failed to load sweets');
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
@@ -96,11 +101,11 @@ export const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-pink-50 to-rose-50 dark:from-purple-950 dark:via-pink-950 dark:to-red-950 py-8 animate-fade-in transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-teal-50 dark:from-slate-950 dark:via-gray-950 dark:to-slate-900 py-8 animate-fade-in transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 animate-slide-up">
-          <p className="text-gray-700 dark:text-gray-300 text-lg italic">Because your diet starts tomorrow, right?</p>
-          <p className="text-red-600 dark:text-yellow-400 text-sm mt-1">Warning: May cause instant happiness & zero regrets</p>
+          <p className="text-gray-700 dark:text-gray-300 text-lg italic">Authentic Indian sweets, delivered fresh</p>
+          <p className="text-teal-600 dark:text-teal-400 text-sm mt-1">Quality sweets for every celebration</p>
         </div>
 
         <FestivalCountdown />
@@ -118,7 +123,7 @@ export const Dashboard: React.FC = () => {
         )}
 
         {/* Search and Filter Section */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-8 border border-orange-100 dark:border-purple-700 hover:shadow-xl transition-all duration-300">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-8 border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-300">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <style>{`
               .dark input, .dark select {

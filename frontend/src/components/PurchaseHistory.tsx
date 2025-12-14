@@ -35,7 +35,7 @@ export const PurchaseHistory: React.FC = () => {
   if (topPurchases.length === 0) return null;
 
   return (
-    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-8 border border-orange-100 dark:border-purple-700">
+    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg p-6 mb-8 border border-gray-200 dark:border-gray-700">
       <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Today's Sweet Addiction 😋</h3>
       <div className="space-y-3">
         {topPurchases.map(([name, count], index) => (
