@@ -91,6 +91,26 @@ npm run dev
 ```
 Frontend runs on `http://localhost:5173`
 
+## 📸 Screenshots
+
+### Dashboard - Light Mode
+![Dashboard Light Mode](screenshots/dashboard-light.png)
+
+### Dashboard - Dark Mode
+![Dashboard Dark Mode](screenshots/dashboard-dark.png)
+
+### Login Page
+![Login Page](screenshots/login.png)
+
+### Shopping Cart
+![Shopping Cart](screenshots/cart.png)
+
+### Admin Panel
+![Admin Panel](screenshots/admin-panel.png)
+
+### Wishlist
+![Wishlist](screenshots/wishlist.png)
+
 ## 📁 Project Structure
 
 ```
