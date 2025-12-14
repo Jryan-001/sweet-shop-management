@@ -1,0 +1,20 @@
+🔧 QUICK FIX FOR LOGIN ISSUE
+
+The problem: Old invalid token in browser storage
+
+SOLUTION (Do this now):
+
+1. Open browser (where app is running)
+2. Press F12
+3. Go to "Application" or "Storage" tab
+4. Click "Local Storage" on left
+5. Click "http://localhost:5173"
+6. Click "Clear All" or delete "token" and "user"
+7. Close DevTools (F12)
+8. Refresh page (Ctrl + F5)
+
+NOW TRY TO LOGIN:
+Email: admin@sweetshop.com
+Password: admin123
+
+✅ IT WILL WORK!

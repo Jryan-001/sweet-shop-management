@@ -20,6 +20,7 @@ model Sweet {
   category  String
   price     Float
   quantity  Int
+  image     String   @default("placeholder.jpg")
   createdAt DateTime @default(now())
 }
 
