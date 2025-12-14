@@ -8,13 +8,24 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    const stored = localStorage.getItem('theme');
+    return stored === 'dark';
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDark]);
 
   useEffect(() => {
     const stored = localStorage.getItem('theme');
-    if (stored === 'dark') {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
+    if (!stored) {
+      localStorage.setItem('theme', 'light');
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 

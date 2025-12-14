@@ -101,7 +101,7 @@ export const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-teal-50 dark:from-slate-950 dark:via-gray-950 dark:to-slate-900 py-8 animate-fade-in transition-colors duration-300">
+    <div className="min-h-screen py-8 animate-fade-in">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 animate-slide-up">
           <p className="text-gray-700 dark:text-gray-300 text-lg italic">Authentic Indian sweets, delivered fresh</p>

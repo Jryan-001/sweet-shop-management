@@ -9,6 +9,8 @@ export const Navbar: React.FC = () => {
   const { isDark, toggleTheme } = useTheme();
   const { totalItems } = useCart();
   const navigate = useNavigate();
+  const location = window.location.pathname;
+  const isAuthPage = location === '/login' || location === '/register';
 
   const handleLogout = () => {
     logout();
@@ -17,9 +19,11 @@ export const Navbar: React.FC = () => {
 
   return (
     <nav className={`shadow-xl sticky top-0 z-50 transition-all duration-300 ${
-      isDark 
+      isAuthPage
+        ? 'bg-rose-600'
+        : isDark 
         ? 'bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900' 
-        : 'bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-600'
+        : 'bg-rose-600'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
@@ -30,13 +34,15 @@ export const Navbar: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <button
-              onClick={toggleTheme}
-              className="text-white hover:bg-white/20 p-2 rounded-lg transition-all duration-300 hover:scale-110"
-              title={isDark ? 'Diwali Mode' : 'Night Mode'}
-            >
-              {isDark ? '🪔' : '🌙'}
-            </button>
+            {!isAuthPage && (
+              <button
+                onClick={toggleTheme}
+                className="text-white hover:bg-white/20 p-2 rounded-lg transition-all duration-300 hover:scale-110"
+                title={isDark ? 'Diwali Mode' : 'Night Mode'}
+              >
+                {isDark ? '🪔' : '🌙'}
+              </button>
+            )}
             {user ? (
               <>
                 <Link
@@ -96,7 +102,7 @@ export const Navbar: React.FC = () => {
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-white text-orange-600 px-5 py-2 rounded-lg text-sm font-bold hover:bg-orange-50 transition-all duration-300 hover:scale-105 shadow-lg"
+                  className="bg-white text-red-600 px-5 py-2 rounded-lg text-sm font-bold hover:bg-red-50 transition-all duration-300 hover:scale-105 shadow-lg"
                 >
                   Sign Up
                 </Link>

@@ -107,13 +107,13 @@ export const AdminPanel: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">मिठास Control Center</h1>
-            <p className="text-gray-600">Where magic (and sugar) happens ✨</p>
-            <p className="text-orange-600 text-sm italic">With great power comes great responsibility... to add more sweets!</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">मिठास Control Center</h1>
+            <p className="text-gray-600 dark:text-gray-300">Where magic (and sugar) happens ✨</p>
+            <p className="text-orange-600 dark:text-orange-400 text-sm italic">With great power comes great responsibility... to add more sweets!</p>
           </div>
           <button
             onClick={() => {
@@ -135,7 +135,7 @@ export const AdminPanel: React.FC = () => {
 
         {/* Add/Edit Form */}
         {showAddForm && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
             <h2 className="text-xl font-semibold mb-4">
               {editingSweet ? 'Edit Sweet' : 'Add New Sweet'}
             </h2>

@@ -72,7 +72,7 @@ const App: React.FC = () => {
       <AuthProvider>
         <CartProvider>
           <Router>
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+            <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 dark:bg-gradient-to-br dark:from-slate-950 dark:via-gray-950 dark:to-slate-900 transition-colors duration-300">
               <Toaster position="top-right" />
               <Navbar />
               <AppRoutes />
